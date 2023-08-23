@@ -1,11 +1,33 @@
+import { useState } from 'react';
 import './Register.scss';
 import { useNavigate } from 'react-router-dom';
 
 function Register(props) {
+    const initialState = {
+        email: '',
+        username: '',
+        phone: '',
+        password: '',
+        confirmPassword: '',
+    };
+    const [formData, setFormData] = useState(initialState);
+
     const navigate = useNavigate();
 
     const handleLogin = () => {
         navigate('/login');
+    };
+
+    const handleRegister = () => {
+        let userData = formData;
+        console.log(userData);
+    };
+
+    const handleChangeInput = (key, value) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [key]: value,
+        }));
     };
 
     return (
@@ -19,28 +41,28 @@ function Register(props) {
                     <div className='col-12 col-sm-5 content-right d-flex flex-column gap-2 py-3'>
                         <div className='brand d-sm-none d-block'>DuongPC</div>
                         <div className="form-group">
-                            <label class="form-label">Email address</label>
-                            <input className='form-control' type='text'></input>
+                            <label className="form-label">Email address</label>
+                            <input className='form-control' type='text' value={formData.email} onChange={(event) => handleChangeInput('email', event.target.value)}></input>
                         </div>
                         <div className="form-group">
-                            <label class="form-label">Username</label>
-                            <input className='form-control' type='text'></input>
+                            <label className="form-label">Username</label>
+                            <input className='form-control' type='text' value={formData.username} onChange={(event) => handleChangeInput('username', event.target.value)}></input>
                         </div>
                         <div className="form-group">
-                            <label class="form-label">Phone number</label>
-                            <input className='form-control' type='text'></input>
+                            <label className="form-label">Phone number</label>
+                            <input className='form-control' type='text' value={formData.phone} onChange={(event) => handleChangeInput('phone', event.target.value)}></input>
                         </div>
                         <div className="form-group">
-                            <label class="form-label">Password</label>
-                            <input className='form-control' type='password'></input>
+                            <label className="form-label">Password</label>
+                            <input className='form-control' type='password' value={formData.password} onChange={(event) => handleChangeInput('password', event.target.value)}></input>
                         </div>
                         <div className="form-group">
-                            <label class="form-label">Re-enter password</label>
-                            <input className='form-control' type='password'></input>
+                            <label className="form-label">Re-enter password</label>
+                            <input className='form-control' type='password' value={formData.confirmPassword} onChange={(event) => handleChangeInput('confirmPassword', event.target.value)}></input>
                         </div>
-                        <button className='btn btn-primary'>Register</button>
+                        <button className='btn btn-primary' onClick={() => handleRegister()}>Register</button>
                         <hr></hr>
-                        <div className='text-center'><button class="btn btn-success" onClick={() => handleLogin()}>Already have an account?</button></div>
+                        <div className='text-center'><button className="btn btn-success" onClick={() => handleLogin()}>Already have an account?</button></div>
                     </div>
                 </div>
             </div>

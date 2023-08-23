@@ -1,8 +1,17 @@
 import './Login.scss';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 function Login(props) {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // axios.get("http://localhost:8080/api/testApi")
+        //     .then(result => {
+        //         console.log(result.data);
+        //     });
+    }, []);
 
     const handleCreateNewAccount = () => {
         navigate('/register');
@@ -25,7 +34,7 @@ function Login(props) {
                             <a className='forgot-password' href='#'>Forgotten password?</a>
                         </span>
                         <hr></hr>
-                        <div className='text-center'><button class="btn btn-success" onClick={() => handleCreateNewAccount()}>Create new account</button></div>
+                        <div className='text-center'><button className="btn btn-success" onClick={() => handleCreateNewAccount()}>Create new account</button></div>
                     </div>
                 </div>
             </div>
