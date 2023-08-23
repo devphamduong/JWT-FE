@@ -1,9 +1,16 @@
 import './Login.scss';
+import { useNavigate } from 'react-router-dom';
 
 function Login(props) {
+    const navigate = useNavigate();
+
+    const handleCreateNewAccount = () => {
+        navigate('/register');
+    };
+
     return (
         <div className='login-container py-3 d-flex justify-content-center align-items-center'>
-            <div className='container login-content'>
+            <div className='container'>
                 <div className='row align-items-center px-3 px-sm-0'>
                     <div className='col-12 d-none col-sm-7 d-sm-block content-left'>
                         <div className='brand'>DuongPC</div>
@@ -18,7 +25,7 @@ function Login(props) {
                             <a className='forgot-password' href='#'>Forgotten password?</a>
                         </span>
                         <hr></hr>
-                        <div className='text-center'><button class="btn btn-success">Create new account</button></div>
+                        <div className='text-center'><button class="btn btn-success" onClick={() => handleCreateNewAccount()}>Create new account</button></div>
                     </div>
                 </div>
             </div>
