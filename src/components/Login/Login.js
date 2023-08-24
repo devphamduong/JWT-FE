@@ -1,17 +1,8 @@
 import './Login.scss';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useEffect } from 'react';
 
 function Login(props) {
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // axios.get("http://localhost:8080/api/testApi")
-        //     .then(result => {
-        //         console.log(result.data);
-        //     });
-    }, []);
 
     const handleCreateNewAccount = () => {
         navigate('/register');

@@ -1,17 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Register.scss';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function Register(props) {
-    const initialState = {
+    const initialFormInputs = {
         email: '',
         username: '',
         phone: '',
         password: '',
         confirmPassword: '',
     };
-    const [formData, setFormData] = useState(initialState);
+    const defaultValidInputs = {
+        isValidEmail: true,
+        isValidPhone: true,
+        isValidPassword: true,
+        isValidConfirmPassword: true
+    };
+    const [formData, setFormData] = useState(initialFormInputs);
+    const [checkInputs, setCheckInputs] = useState(defaultValidInputs);
 
     const navigate = useNavigate();
 
@@ -20,38 +28,60 @@ function Register(props) {
     };
 
     const isValidInputs = () => {
-        const { email, username, phone, password, confirmPassword } = formData;
+        const { email, phone, password, confirmPassword } = formData;
 
-        if (!email || !username || !phone || !password || !confirmPassword) {
-            toast.error("All fields are required");
-            return false;
+        const newCheckInputs = { ...defaultValidInputs };
+        if (!email) {
+            newCheckInputs.isValidEmail = false;
         }
-
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            return false;
-        }
-
         const emailRegex = /\S+@\S+\.\S+/;
         if (!emailRegex.test(email)) {
             toast.error("Please enter a valid email address");
+            setCheckInputs({ ...newCheckInputs, isValidEmail: false });
+            return false;
+        }
+        if (!phone) {
+            newCheckInputs.isValidPhone = false;
+        }
+        if (!password) {
+            newCheckInputs.isValidPassword = false;
+        }
+        if (!confirmPassword || password !== confirmPassword) {
+            newCheckInputs.isValidConfirmPassword = false;
+            toast.error("Passwords do not match");
+        }
+
+        if (!email || !phone || !password || !confirmPassword) {
+            toast.error("All fields are required");
+            setCheckInputs(newCheckInputs);
             return false;
         }
 
+        setCheckInputs(newCheckInputs);
         return true;
     };
 
     const handleRegister = () => {
-        let userData = formData;
         let isValid = isValidInputs();
+        if (isValid) {
+            axios.post("http://localhost:8080/api/v1/register", {
+                formData
+            })
+                .then(result => {
+                    console.log(result.data);
+                });
+        }
     };
 
     const handleChangeInputs = (key, value) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            [key]: value,
-        }));
+        setFormData({
+            ...formData, [key]: value,
+        });
     };
+
+    useEffect(() => {
+
+    }, []);
 
     return (
         <div className='register-container py-3 d-flex justify-content-center align-items-center'>
@@ -65,7 +95,7 @@ function Register(props) {
                         <div className='brand d-sm-none d-block'>DuongPC</div>
                         <div className="form-group">
                             <label className="form-label">Email address</label>
-                            <input className='form-control' type='text' value={formData.email} onChange={(event) => handleChangeInputs('email', event.target.value)}></input>
+                            <input className={checkInputs.isValidEmail ? 'form-control' : 'form-control is-invalid'} type='text' value={formData.email} onChange={(event) => handleChangeInputs('email', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Username</label>
@@ -73,15 +103,15 @@ function Register(props) {
                         </div>
                         <div className="form-group">
                             <label className="form-label">Phone number</label>
-                            <input className='form-control' type='text' value={formData.phone} onChange={(event) => handleChangeInputs('phone', event.target.value)}></input>
+                            <input className={checkInputs.isValidPhone ? 'form-control' : 'form-control is-invalid'} type='text' value={formData.phone} onChange={(event) => handleChangeInputs('phone', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Password</label>
-                            <input className='form-control' type='password' value={formData.password} onChange={(event) => handleChangeInputs('password', event.target.value)}></input>
+                            <input className={checkInputs.isValidPassword ? 'form-control' : 'form-control is-invalid'} type='password' value={formData.password} onChange={(event) => handleChangeInputs('password', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Re-enter password</label>
-                            <input className='form-control' type='password' value={formData.confirmPassword} onChange={(event) => handleChangeInputs('confirmPassword', event.target.value)}></input>
+                            <input className={checkInputs.isValidConfirmPassword ? 'form-control' : 'form-control is-invalid'} type='password' value={formData.confirmPassword} onChange={(event) => handleChangeInputs('confirmPassword', event.target.value)}></input>
                         </div>
                         <button className='btn btn-primary' onClick={() => handleRegister()}>Register</button>
                         <hr></hr>
