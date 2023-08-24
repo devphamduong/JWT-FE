@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './Register.scss';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Register(props) {
     const initialState = {
@@ -18,12 +19,34 @@ function Register(props) {
         navigate('/login');
     };
 
-    const handleRegister = () => {
-        let userData = formData;
-        console.log(userData);
+    const isValidInputs = () => {
+        const { email, username, phone, password, confirmPassword } = formData;
+
+        if (!email || !username || !phone || !password || !confirmPassword) {
+            toast.error("All fields are required");
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return false;
+        }
+
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(email)) {
+            toast.error("Please enter a valid email address");
+            return false;
+        }
+
+        return true;
     };
 
-    const handleChangeInput = (key, value) => {
+    const handleRegister = () => {
+        let userData = formData;
+        let isValid = isValidInputs();
+    };
+
+    const handleChangeInputs = (key, value) => {
         setFormData((prevData) => ({
             ...prevData,
             [key]: value,
@@ -42,23 +65,23 @@ function Register(props) {
                         <div className='brand d-sm-none d-block'>DuongPC</div>
                         <div className="form-group">
                             <label className="form-label">Email address</label>
-                            <input className='form-control' type='text' value={formData.email} onChange={(event) => handleChangeInput('email', event.target.value)}></input>
+                            <input className='form-control' type='text' value={formData.email} onChange={(event) => handleChangeInputs('email', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Username</label>
-                            <input className='form-control' type='text' value={formData.username} onChange={(event) => handleChangeInput('username', event.target.value)}></input>
+                            <input className='form-control' type='text' value={formData.username} onChange={(event) => handleChangeInputs('username', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Phone number</label>
-                            <input className='form-control' type='text' value={formData.phone} onChange={(event) => handleChangeInput('phone', event.target.value)}></input>
+                            <input className='form-control' type='text' value={formData.phone} onChange={(event) => handleChangeInputs('phone', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Password</label>
-                            <input className='form-control' type='password' value={formData.password} onChange={(event) => handleChangeInput('password', event.target.value)}></input>
+                            <input className='form-control' type='password' value={formData.password} onChange={(event) => handleChangeInputs('password', event.target.value)}></input>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Re-enter password</label>
-                            <input className='form-control' type='password' value={formData.confirmPassword} onChange={(event) => handleChangeInput('confirmPassword', event.target.value)}></input>
+                            <input className='form-control' type='password' value={formData.confirmPassword} onChange={(event) => handleChangeInputs('confirmPassword', event.target.value)}></input>
                         </div>
                         <button className='btn btn-primary' onClick={() => handleRegister()}>Register</button>
                         <hr></hr>
