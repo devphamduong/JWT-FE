@@ -31,7 +31,17 @@ function Login(props) {
             return;
         }
         setCheckInputs(newCheckInputs);
-        await loginUser(emailOrPhone, password);
+        let response = await loginUser(emailOrPhone, password);
+        if (response && response.data && +response.data.EC === 0) {
+            let data = {
+                isAuthenticated: true,
+                token: 'token'
+            };
+            sessionStorage.setItem('account', JSON.stringify(data));
+            navigate('/users');
+        } else {
+            toast.error(response.data.EM);
+        }
     };
 
     return (

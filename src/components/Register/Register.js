@@ -66,12 +66,11 @@ function Register(props) {
         if (isValid) {
             const { email, phone, password, username } = formData;
             let response = await registerUser(email, phone, password, username);
-            let data = response.data;
-            if (+data.EC === 0) {
-                toast.success(data.EM);
+            if (response && response.data && +response.data.EC === 0) {
+                toast.success(response.data.EM);
                 navigate('/login');
             } else {
-                toast.error(data.EM);
+                toast.error(response.data.EM);
             }
         }
     };
