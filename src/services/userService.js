@@ -6,10 +6,14 @@ const registerUser = (email, phone, password, username) => {
     });
 };
 
-const loginUser = (emailOrPhone, password,) => {
+const loginUser = (emailOrPhone, password) => {
     return axios.post("http://localhost:8080/api/v1/login", {
         emailOrPhone, password
     });
 };
 
-export { registerUser, loginUser };
+const fetchAllUsers = () => {
+    return axios.get("http://localhost:8080/api/v1/user/read");
+};
+
+export { registerUser, loginUser, fetchAllUsers };
