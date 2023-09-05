@@ -70,7 +70,7 @@ function Login(props) {
                     <div className='col-12 col-sm-5 content-right d-flex flex-column gap-2 py-3'>
                         <div className='brand d-sm-none d-block'>DuongPC</div>
                         <input placeholder='Email address or phone number' className={checkInputs.isValidEmailOrPhone ? 'form-control' : 'form-control is-invalid'} type='text' value={emailOrPhone} onChange={(event) => setEmailOrPhone(event.target.value)}></input>
-                        <input placeholder='Password' className={checkInputs.isValidPassword ? 'form-control' : 'form-control is-invalid'} type='password' value={password} onChange={(event) => setPassword(event.target.value)} onkeypress={(event) => handlePress(event)}></input>
+                        <input placeholder='Password' className={checkInputs.isValidPassword ? 'form-control' : 'form-control is-invalid'} type='password' value={password} onChange={(event) => setPassword(event.target.value)} onKeyPress={(event) => handlePress(event)}></input>
                         <button className='btn btn-primary' onClick={() => handleLogin()}>Log in</button>
                         <span className='text-center'>
                             <a className='forgot-password' href='#'>Forgotten password?</a>
