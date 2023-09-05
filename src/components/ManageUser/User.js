@@ -1,21 +1,30 @@
 import { useEffect, useState } from 'react';
+import ReactPaginate from 'react-paginate';
 import './User.scss';
 import { fetchAllUsers } from '../../services/userService';
 
 function User(props) {
     const [listUser, setListUser] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [currentLimit, setCurrentLimit] = useState(2);
+    const [totalPage, setTotalPage] = useState(0);
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [currentPage]);
 
     const fetchUsers = async () => {
-        let response = await fetchAllUsers();
+        let response = await fetchAllUsers(currentPage, currentLimit);
         if (response && response.data && +response.data.EC === 0) {
-            setListUser(response.data.DT);
+            setTotalPage(response.data.DT.totalPage);
+            setListUser(response.data.DT.users);
         } else {
 
         }
+    };
+
+    const handlePageClick = async (event) => {
+        setCurrentPage(+event.selected + 1);
     };
 
     return (
@@ -31,16 +40,17 @@ function User(props) {
                     </div>
                 </div>
                 <div className="user-body">
-                    <table classname="table table-bordered table-hover">
+                    <table className="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Username</th>
                                 <th scope="col">Group</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
-                        <tbody classname="table-group-divider">
+                        <tbody className="table-group-divider">
                             {listUser && listUser.length > 0 ?
                                 listUser.map((item, index) => {
                                     return (
@@ -49,24 +59,41 @@ function User(props) {
                                             <td>{item.email}</td>
                                             <td>{item.username}</td>
                                             <td>{item.Group ? item.Group.name : ''}</td>
+                                            <td>
+                                                <button className="btn btn-warning">Edit</button>
+                                                <button className='btn btn-danger'>Delete</button>
+                                            </td>
                                         </tr>
                                     );
                                 })
-                                : <><span>Not found users</span></>}
+                                : <tr><td colSpan="5" className='text-center'>Not found users</td></tr>}
                         </tbody>
                     </table>
                 </div>
-                <div className="user-footer">
-                    <nav aria-label="Page navigation example">
-                        <ul className="pagination">
-                            <li className="page-item"><a className="page-link" href="#">Previous</a></li>
-                            <li className="page-item"><a className="page-link" href="#">1</a></li>
-                            <li className="page-item"><a className="page-link" href="#">2</a></li>
-                            <li className="page-item"><a className="page-link" href="#">3</a></li>
-                            <li className="page-item"><a className="page-link" href="#">Next</a></li>
-                        </ul>
-                    </nav>
-                </div>
+                {totalPage > 0 &&
+                    <div className="user-footer d-flex justify-content-center">
+                        <ReactPaginate
+                            nextLabel="next >"
+                            onPageChange={handlePageClick}
+                            pageRangeDisplayed={3}
+                            marginPagesDisplayed={2}
+                            pageCount={totalPage}
+                            previousLabel="< previous"
+                            pageClassName="page-item"
+                            pageLinkClassName="page-link"
+                            previousClassName="page-item"
+                            previousLinkClassName="page-link"
+                            nextClassName="page-item"
+                            nextLinkClassName="page-link"
+                            breakLabel="..."
+                            breakClassName="page-item"
+                            breakLinkClassName="page-link"
+                            containerClassName="pagination"
+                            activeClassName="active"
+                            renderOnZeroPageCount={null}
+                        />
+                    </div>
+                }
             </div>
         </div>
     );
