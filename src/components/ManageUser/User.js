@@ -4,6 +4,7 @@ import './User.scss';
 import { deleteUser, fetchAllUsers } from '../../services/userService';
 import { toast } from 'react-toastify';
 import ModelDelete from './ModalDelete';
+import ModalUser from './ModalUser';
 
 function User(props) {
     const [listUser, setListUser] = useState([]);
@@ -122,6 +123,7 @@ function User(props) {
                 </div>
             </div>
             <ModelDelete show={isShowModalDelete} handleClose={handleClose} confirmDeleteUser={confirmDeleteUser} dataModalDelete={dataModalDelete} />
+            <ModalUser title={"Create new user"} show={isShowModalDelete} handleClose={handleClose} confirmDeleteUser={confirmDeleteUser} dataModalDelete={dataModalDelete} />
         </>
     );
 }

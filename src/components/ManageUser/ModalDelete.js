@@ -14,7 +14,7 @@ function ModelDelete(props) {
                         Cancel
                     </Button>
                     <Button variant="primary" onClick={props.confirmDeleteUser}>
-                        Delete
+                        Confirm
                     </Button>
                 </Modal.Footer>
             </Modal>

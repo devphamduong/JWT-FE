@@ -10,7 +10,7 @@ function Nav(props) {
         if (location.pathname === '/login') {
             setIsShow(false);
         }
-    }, []);
+    }, [location.pathname]);
 
     return (
         <>
