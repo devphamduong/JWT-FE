@@ -12,11 +12,16 @@ function User(props) {
     const [currentLimit, setCurrentLimit] = useState(2);
     const [totalPage, setTotalPage] = useState(0);
     const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+    const [isShowModalUser, setIsShowModalUser] = useState(false);
     const [dataModalDelete, setDataModalDelete] = useState({});
 
-    const handleClose = () => {
+    const handleCloseModalDelete = () => {
         setDataModalDelete({});
         setIsShowModalDelete(false);
+    };
+
+    const handleCloseModalUser = () => {
+        setIsShowModalUser(false);
     };
 
     useEffect(() => {
@@ -24,10 +29,10 @@ function User(props) {
     }, [currentPage]);
 
     const fetchUsers = async () => {
-        let response = await fetchAllUsers(currentPage, currentLimit);
-        if (response && response.data && +response.data.EC === 0) {
-            setTotalPage(response.data.DT.totalPage);
-            setListUser(response.data.DT.users);
+        let res = await fetchAllUsers(currentPage, currentLimit);
+        if (res && res.data && +res.data.EC === 0) {
+            setTotalPage(res.data.DT.totalPage);
+            setListUser(res.data.DT.users);
         } else {
 
         }
@@ -43,11 +48,12 @@ function User(props) {
     };
 
     const confirmDeleteUser = async () => {
-        let response = await deleteUser(dataModalDelete.id);
-        if (response && response.data && +response.data.EC === 0) {
-            toast.success(response.data.EM);
+        let res = await deleteUser(dataModalDelete.id);
+        if (res && res.data && +res.data.EC === 0) {
+            toast.success(res.data.EM);
+            setIsShowModalDelete(false);
         } else {
-            toast.error(response.data.EM);
+            toast.error(res.data.EM);
         }
         await fetchUsers();
     };
@@ -62,7 +68,7 @@ function User(props) {
                         </div>
                         <div className="actions">
                             <button className='btn btn-success'>Refresh</button>
-                            <button className='btn btn-primary'>Add new</button>
+                            <button className='btn btn-primary' onClick={() => setIsShowModalUser(true)}>Add new</button>
                         </div>
                     </div>
                     <div className="user-body">
@@ -122,8 +128,8 @@ function User(props) {
                     }
                 </div>
             </div>
-            <ModelDelete show={isShowModalDelete} handleClose={handleClose} confirmDeleteUser={confirmDeleteUser} dataModalDelete={dataModalDelete} />
-            <ModalUser title={"Create new user"} show={isShowModalDelete} handleClose={handleClose} confirmDeleteUser={confirmDeleteUser} dataModalDelete={dataModalDelete} />
+            <ModelDelete show={isShowModalDelete} handleClose={handleCloseModalDelete} confirmDeleteUser={confirmDeleteUser} dataModalDelete={dataModalDelete} />
+            <ModalUser title={"Create new user"} show={isShowModalUser} handleClose={handleCloseModalUser} />
         </>
     );
 }

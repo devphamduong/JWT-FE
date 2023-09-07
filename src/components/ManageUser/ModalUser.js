@@ -1,25 +1,66 @@
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
-import { fetchAllGroups } from '../../services/userService';
+import { createUser, fetchAllGroups } from '../../services/userService';
+import { toast } from 'react-toastify';
 
 function ModalUser(props) {
-    const initialFormInputs = {
+    const initialUserData = {
         email: '',
         username: '',
         phone: '',
         password: '',
         sex: '',
         address: '',
-        groupID: ''
+        group: ''
+    };
+    const defaultValidInputs = {
+        isValidEmail: true,
+        isValidPhone: true,
+        isValidPassword: true,
+        isValidUsername: true,
+        isValidAddress: true,
+        isValidSex: true,
+        isValidGroup: true,
     };
     const [listGroups, setListGroups] = useState([]);
-    const [formData, setFormData] = useState(initialFormInputs);
+    const [userData, setUserData] = useState(initialUserData);
+    const [checkInputs, setCheckInputs] = useState(defaultValidInputs);
 
     const handleChangeInputs = (key, value) => {
-        setFormData({
-            ...formData, [key]: value,
+        setUserData({
+            ...userData, [key]: value,
         });
+    };
+
+    const isValidInputs = () => {
+        const { email, phone, password, username, sex, address, group } = userData;
+        const newCheckInputs = { ...defaultValidInputs };
+
+        const requiredFields = ['email', 'phone', 'password', 'username', 'sex', 'address', 'group'];
+
+        for (const field of requiredFields) {
+            if (!userData[field]) {
+                newCheckInputs[`isValid${field.charAt(0).toUpperCase() + field.slice(1)}`] = false;
+            }
+        }
+
+        if (!email || !phone || !password || !username || !sex || !address || !group) {
+            toast.error("All fields are required");
+            setCheckInputs(newCheckInputs);
+            return false;
+        }
+
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(email)) {
+            toast.error("Please enter a valid email address");
+            newCheckInputs.isValidEmail = false;
+            setCheckInputs(newCheckInputs);
+            return false;
+        }
+
+        setCheckInputs(newCheckInputs);
+        return true;
     };
 
     useEffect(() => {
@@ -27,11 +68,29 @@ function ModalUser(props) {
     }, []);
 
     const fetchGroups = async () => {
-        let response = await fetchAllGroups();
-        if (response && response.data && +response.data.EC === 0) {
-            setListGroups(response.data.DT);
+        let res = await fetchAllGroups();
+        if (res && res.data && +res.data.EC === 0) {
+            setListGroups(res.data.DT);
+            if (res.data.DT && res.data.DT.length > 0) {
+                let groups = res.data.DT;
+                setUserData({ ...userData, group: groups[0].id });
+            }
         } else {
 
+        }
+    };
+
+    const handleCreateUser = async () => {
+        let isValid = isValidInputs();
+        if (isValid) {
+            let res = await createUser(userData);
+            if (res && res.data && +res.data.EC === 0) {
+                toast.success(res.data.EM);
+                setUserData({ ...initialUserData, group: listGroups[0].id });
+                props.handleClose();
+            } else {
+                toast.error(res.data.EC);
+            }
         }
     };
 
@@ -45,34 +104,34 @@ function ModalUser(props) {
                     <div className="content-body">
                         <div className="col-12 col-sm-6 form-group">
                             <label>Email address (<span className='text-danger'>*</span>)</label>
-                            <input type="email" className="form-control" value={formData.email} onChange={(event) => handleChangeInputs('email', event.target.value)} />
+                            <input type="email" className={checkInputs.isValidEmail ? 'form-control' : 'form-control is-invalid'} value={userData.email} onChange={(event) => handleChangeInputs('email', event.target.value)} />
                         </div>
                         <div className="col-12 col-sm-6 form-group">
                             <label>Phone (<span className='text-danger'>*</span>)</label>
-                            <input type="text" className="form-control" value={formData.phone} onChange={(event) => handleChangeInputs('phone', event.target.value)} />
+                            <input type="text" className={checkInputs.isValidPhone ? 'form-control' : 'form-control is-invalid'} value={userData.phone} onChange={(event) => handleChangeInputs('phone', event.target.value)} />
                         </div>
                         <div className="col-12 col-sm-6 form-group">
                             <label>Username</label>
-                            <input type="text" className="form-control" value={formData.username} onChange={(event) => handleChangeInputs('username', event.target.value)} />
+                            <input type="text" className={checkInputs.isValidUsername ? 'form-control' : 'form-control is-invalid'} value={userData.username} onChange={(event) => handleChangeInputs('username', event.target.value)} />
                         </div>
                         <div className="col-12 col-sm-6 form-group">
                             <label>Password (<span className='text-danger'>*</span>)</label>
-                            <input type="password" className="form-control" value={formData.password} onChange={(event) => handleChangeInputs('password', event.target.value)} />
+                            <input type="password" className={checkInputs.isValidPassword ? 'form-control' : 'form-control is-invalid'} value={userData.password} onChange={(event) => handleChangeInputs('password', event.target.value)} />
                         </div>
                         <div className="col-12 form-group">
                             <label>Address </label>
-                            <input type="text" className="form-control" value={formData.address} onChange={(event) => handleChangeInputs('address', event.target.value)} />
+                            <input type="text" className={checkInputs.isValidAddress ? 'form-control' : 'form-control is-invalid'} value={userData.address} onChange={(event) => handleChangeInputs('address', event.target.value)} />
                         </div>
                         <div className="col-12 form-group">
                             <label>Sex </label>
-                            <select name="" id="" className="form-select" defaultValue={'Male'}>
-                                <option value="Male">Male</option>
+                            <select className={checkInputs.isValidSex ? 'form-select' : 'form-select is-invalid'} onChange={(event) => handleChangeInputs('sex', event.target.value)}>
+                                <option defaultValue="Male">Male</option>
                                 <option value="Female">Female</option>
                             </select>
                         </div>
                         <div className="col-12 form-group">
                             <label>Group (<span className='text-danger'>*</span>)</label>
-                            <select name="" id="" className="form-select">
+                            <select className={checkInputs.isValidGroup ? 'form-select' : 'form-select is-invalid'} onChange={(event) => handleChangeInputs('group', event.target.value)} >
                                 {listGroups && listGroups.length > 0 &&
                                     listGroups.map((item, index) => {
                                         return (
@@ -88,7 +147,7 @@ function ModalUser(props) {
                     <Button variant="secondary" onClick={props.handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={props.confirmDeleteUser}>
+                    <Button variant="primary" onClick={() => handleCreateUser()}>
                         Create
                     </Button>
                 </Modal.Footer>
