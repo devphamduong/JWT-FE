@@ -14,6 +14,8 @@ function User(props) {
     const [isShowModalDelete, setIsShowModalDelete] = useState(false);
     const [isShowModalUser, setIsShowModalUser] = useState(false);
     const [dataModalDelete, setDataModalDelete] = useState({});
+    const [dataModalUser, setDataModalUser] = useState({});
+    const [actionModalUser, setActionModalUser] = useState('CREATE');
 
     const handleCloseModalDelete = () => {
         setDataModalDelete({});
@@ -21,6 +23,7 @@ function User(props) {
     };
 
     const handleCloseModalUser = () => {
+        setDataModalUser({});
         setIsShowModalUser(false);
     };
 
@@ -47,6 +50,12 @@ function User(props) {
         setIsShowModalDelete(true);
     };
 
+    const handleEditUser = async (user) => {
+        setActionModalUser("UPDATE");
+        setDataModalUser(user);
+        setIsShowModalUser(true);
+    };
+
     const confirmDeleteUser = async () => {
         let res = await deleteUser(dataModalDelete.id);
         if (res && res.data && +res.data.EC === 0) {
@@ -68,13 +77,14 @@ function User(props) {
                         </div>
                         <div className="actions">
                             <button className='btn btn-success'>Refresh</button>
-                            <button className='btn btn-primary' onClick={() => setIsShowModalUser(true)}>Add new</button>
+                            <button className='btn btn-primary' onClick={() => { setIsShowModalUser(true); setActionModalUser("CREATE"); }}>Add new</button>
                         </div>
                     </div>
                     <div className="user-body">
                         <table className="table table-bordered table-hover">
                             <thead>
                                 <tr>
+                                    <th scope="col">No.</th>
                                     <th scope="col">ID</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Username</th>
@@ -87,12 +97,13 @@ function User(props) {
                                     listUser.map((item, index) => {
                                         return (
                                             <tr key={`row-${index}`}>
+                                                <td>{(currentPage - 1) * currentLimit + index + 1}</td>
                                                 <td>{item.id}</td>
                                                 <td>{item.email}</td>
                                                 <td>{item.username}</td>
                                                 <td>{item.Group ? item.Group.name : ''}</td>
                                                 <td>
-                                                    <button className="btn btn-warning">Edit</button>
+                                                    <button className="btn btn-warning" onClick={() => handleEditUser(item)}>Edit</button>
                                                     <button className='btn btn-danger' onClick={() => handleDeleteUser(item)}>Delete</button>
                                                 </td>
                                             </tr>
@@ -129,7 +140,7 @@ function User(props) {
                 </div>
             </div>
             <ModelDelete show={isShowModalDelete} handleClose={handleCloseModalDelete} confirmDeleteUser={confirmDeleteUser} dataModalDelete={dataModalDelete} />
-            <ModalUser title={"Create new user"} show={isShowModalUser} handleClose={handleCloseModalUser} />
+            <ModalUser show={isShowModalUser} handleClose={handleCloseModalUser} action={actionModalUser} dataModal={dataModalUser} fetchUsers={fetchUsers} />
         </>
     );
 }
