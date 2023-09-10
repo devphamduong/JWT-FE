@@ -5,6 +5,8 @@ import { deleteUser, fetchAllUsers } from '../../services/userService';
 import { toast } from 'react-toastify';
 import ModelDelete from './ModalDelete';
 import ModalUser from './ModalUser';
+import { BsFillTrash3Fill } from 'react-icons/bs';
+import { BiEdit } from 'react-icons/bi';
 
 function User(props) {
     const [listUser, setListUser] = useState([]);
@@ -67,16 +69,20 @@ function User(props) {
         await fetchUsers();
     };
 
+    const handleRefresh = async () => {
+        await fetchUsers();
+    };
+
     return (
         <>
             <div className='container'>
                 <div className='manage-user-container'>
                     <div className="user-header">
                         <div className="title">
-                            <h3>Table user</h3>
+                            <h3>Manage user</h3>
                         </div>
                         <div className="actions">
-                            <button className='btn btn-success'>Refresh</button>
+                            <button className='btn btn-success' onClick={() => handleRefresh()}>Refresh</button>
                             <button className='btn btn-primary' onClick={() => { setIsShowModalUser(true); setActionModalUser("CREATE"); }}>Add new</button>
                         </div>
                     </div>
@@ -103,8 +109,8 @@ function User(props) {
                                                 <td>{item.username}</td>
                                                 <td>{item.Group ? item.Group.name : ''}</td>
                                                 <td>
-                                                    <button className="btn btn-warning" onClick={() => handleEditUser(item)}>Edit</button>
-                                                    <button className='btn btn-danger' onClick={() => handleDeleteUser(item)}>Delete</button>
+                                                    <button className="btn btn-warning" onClick={() => handleEditUser(item)}><BiEdit /></button>
+                                                    <button className='btn btn-danger' onClick={() => handleDeleteUser(item)}><BsFillTrash3Fill /></button>
                                                 </td>
                                             </tr>
                                         );
